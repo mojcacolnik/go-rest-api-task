@@ -51,6 +51,7 @@ func handleGetUsers(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(errorResponse{Message: err.Error()})
 		return
 	}
+	DB.Find(&users)
 	json.NewEncoder(w).Encode(users)
 }
 
@@ -63,6 +64,7 @@ func handleGetUser(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(errorResponse{Message: err.Error()})
 		return
 	}
+	DB.First(&user, params)
 	json.NewEncoder(w).Encode(user)
 
 }
