@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
 
@@ -35,72 +34,96 @@ func initialMigration() {
 }
 
 func handleGetUsers(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
 	var users []User
-	err := DB.Find(&users).Error
-	if err != nil {
-		json.NewEncoder(w).Encode(errorResponse{Message: err.Error()})
+
+	if err := DB.Find(&users).Error; err != nil {
+		RenderJSON(w, http.StatusInternalServerError, errorResponse{Message: err.Error()})
 		return
 	}
-	DB.Find(&users)
-	json.NewEncoder(w).Encode(users)
+
+	RenderJSON(w, http.StatusOK, users)
 }
 
 func handleGetUser(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
 	params := chi.URLParam(r, "id")
 	var user User
-	err := DB.First(&user, params).Error
-	if err != nil {
-		json.NewEncoder(w).Encode(errorResponse{Message: err.Error()})
+
+	if err := DB.First(&user, params).Error; err != nil {
+		RenderJSON(w, http.StatusInternalServerError, errorResponse{Message: err.Error()})
 		return
 	}
-	DB.First(&user, params)
-	json.NewEncoder(w).Encode(user)
+	RenderJSON(w, http.StatusOK, user)
 
 }
 
 func handleCreateUser(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	var user User
-	json.NewDecoder(r.Body).Decode(&user)
-	err := DB.Create(&user).Error
-	if err != nil {
-		json.NewEncoder(w).Encode(errorResponse{Message: err.Error()})
+	type form struct {
+		Email     string `json:"email"`
+		FirstName string `json:"firstname"`
+		LastName  string `json:"lastname"`
+		IsActive  bool   `json:"is_active"`
+	}
+
+	var f form
+	defer r.Body.Close()
+
+	if err := DecodeJSON(r.Body, &f); err != nil {
+		RenderJSON(w, http.StatusInternalServerError, errorResponse{Message: err.Error()})
 		return
 	}
-	DB.Create(&user)
-	json.NewEncoder(w).Encode(user)
+
+	user := User{
+		Email:     f.Email,
+		FirstName: f.FirstName,
+		LastName:  f.LastName,
+		IsActive:  f.IsActive,
+	}
+
+	if err := DB.Create(&user).Error; err != nil {
+		RenderJSON(w, http.StatusInternalServerError, errorResponse{Message: err.Error()})
+		return
+	}
+
+	RenderJSON(w, http.StatusOK, user)
 }
 
 func handleUpdateUser(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
+	type form struct {
+		Email     string
+		FirstName string
+		LastName  string
+		IsActive  bool
+	}
+
 	params := chi.URLParam(r, "id")
-	var user User
-	err := DB.First(&user, params).Error
-	if err != nil {
-		json.NewEncoder(w).Encode(errorResponse{Message: err.Error()})
+	var f form
+	defer r.Body.Close()
+
+	user := User{
+		Email:     f.Email,
+		FirstName: f.FirstName,
+		LastName:  f.LastName,
+		IsActive:  f.IsActive,
+	}
+
+	if err := DB.First(&user, params).Error; err != nil {
+		RenderJSON(w, http.StatusInternalServerError, errorResponse{Message: err.Error()})
 		return
 	}
-	DB.First(&user, params)
-	json.NewDecoder(r.Body).Decode(&user)
-	err = DB.Save(&user).Error
-	if err != nil {
-		json.NewEncoder(w).Encode(errorResponse{Message: err.Error()})
-		return
+	if err := DB.Save(&user).Error; err != nil {
+		RenderJSON(w, http.StatusInternalServerError, errorResponse{Message: err.Error()})
 	}
-	DB.Save(&user)
-	json.NewEncoder(w).Encode(user)
+	RenderJSON(w, http.StatusOK, user)
 }
 
 func handleDeleteUser(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	params := chi.URLParam(r, "id")
 	var user User
-	err := DB.Delete(&user, params).Error
-	if err != nil {
-		json.NewEncoder(w).Encode(errorResponse{Message: err.Error()})
+	params := chi.URLParam(r, "id")
+
+	if err := DB.Delete(&user, params).Error; err != nil {
+		RenderJSON(w, http.StatusInternalServerError, errorResponse{Message: err.Error()})
+		return
 	}
-	DB.Delete(&user, params)
-	json.NewEncoder(w).Encode("User is successfully deleted!")
+
+	RenderJSON(w, http.StatusOK, "User is successfully deleted!")
 }
