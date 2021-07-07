@@ -21,5 +21,10 @@ Then call the endpoints
 
 ```
 curl http://localhost:9000/api/users
+
 curl http://localhost:9000/api/users/1
+
+curl -d '{"firstname":"Post", "lastname":"User", "email":"user@email.io"}' -H "Content-Type: application/json" -X POST http://localhost:9000/api/users
+
+curl -X DELETE http://localhost:9000/users/3
 ```
