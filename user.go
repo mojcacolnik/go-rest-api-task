@@ -13,15 +13,6 @@ import (
 var DB *gorm.DB
 var err error
 
-const (
-	dbName = "go-gorm-task"
-	dbPass = "12345"
-	dbHost = "localhost"
-	dbPort = "9000"
-)
-
-var DNS = fmt.Sprintf("root:%s@tcp(%s:%s)/%s?parseTime=true", dbPass, dbHost, dbPort, dbName)
-
 type User struct {
 	gorm.Model
 	Email     string `json:"email"`
@@ -106,6 +97,10 @@ func handleDeleteUser(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	params := chi.URLParam(r, "id")
 	var user User
+	err := DB.Delete(&user, params).Error
+	if err != nil {
+		json.NewEncoder(w).Encode(errorResponse{Message: err.Error()})
+	}
 	DB.Delete(&user, params)
 	json.NewEncoder(w).Encode("User is successfully deleted!")
 }
