@@ -13,9 +13,9 @@ cd go-rest-api-task
 
 Build and run the app
 ```
-go build
+make
 
-./go-rest-api-task
+./build/rest-api-task
 ```
 Then call the endpoints
 
