@@ -1,8 +1,12 @@
 package user
 
-import "net/http"
+import (
+	"net/http"
 
-func handleDeleteUser(w http.ResponseWriter, r *http.Request) {
+	"github.com/go-chi/chi"
+)
+
+func HandleDeleteUser(w http.ResponseWriter, r *http.Request) {
 	var user User
 	params := chi.URLParam(r, "id")
 

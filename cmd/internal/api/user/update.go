@@ -1,8 +1,12 @@
 package user
 
-import "net/http"
+import (
+	"net/http"
 
-func handleUpdateUser(w http.ResponseWriter, r *http.Request) {
+	"github.com/go-chi/chi"
+)
+
+func HandleUpdateUser(w http.ResponseWriter, r *http.Request) {
 	type form struct {
 		Email     string `json:"email" valid:"email, required"`
 		FirstName string `json:"firstname" valid:"stringlength(2|50),optional"`

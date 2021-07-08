@@ -2,7 +2,7 @@ package user
 
 import "net/http"
 
-func handleFindUser(w http.ResponseWriter, r *http.Request) {
+func HandleFindUser(w http.ResponseWriter, r *http.Request) {
 	params := chi.URLParam(r, "id")
 	var user User
 

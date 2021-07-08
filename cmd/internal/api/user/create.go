@@ -2,9 +2,11 @@ package user
 
 import (
 	"net/http"
+
+	"github.com/asaskevich/govalidator"
 )
 
-func handleCreateUser(w http.ResponseWriter, r *http.Request) {
+func HandleCreateUser(w http.ResponseWriter, r *http.Request) {
 	type form struct {
 		Email     string `json:"email" valid:"email, required"`
 		FirstName string `json:"firstname" valid:"stringlength(2|50),required"`
