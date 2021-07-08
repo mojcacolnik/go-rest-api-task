@@ -18,11 +18,11 @@ type User struct {
 	IsActive  bool   `json:"is_active" valid:"required"`
 }
 
-type errorResponse struct {
+type ErrorResponse struct {
 	Message string `json:"message"`
 }
 
-func initialMigration() {
+func InitialMigration() {
 	DB, err = gorm.Open(sqlite.Open("gorm.db"), &gorm.Config{})
 	if err != nil {
 		fmt.Println(err.Error())

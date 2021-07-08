@@ -1,15 +1,21 @@
 package user
 
-import "net/http"
+import (
+	"net/http"
+
+	"github.com/bleenco/go-kit/render"
+	"github.com/go-chi/chi"
+	"github.com/mojcacolnik/go-rest-api-task/cmd/internal/db"
+)
 
 func HandleFindUser(w http.ResponseWriter, r *http.Request) {
 	params := chi.URLParam(r, "id")
-	var user User
+	var user db.User
 
-	if err := DB.First(&user, params).Error; err != nil {
-		RenderJSON(w, http.StatusInternalServerError, errorResponse{Message: err.Error()})
+	if err := db.DB.First(&user, params).Error; err != nil {
+		render.JSON(w, http.StatusInternalServerError, db.ErrorResponse{Message: err.Error()})
 		return
 	}
-	RenderJSON(w, http.StatusOK, user)
+	render.JSON(w, http.StatusOK, user)
 
 }

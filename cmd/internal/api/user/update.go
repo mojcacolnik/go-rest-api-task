@@ -3,7 +3,9 @@ package user
 import (
 	"net/http"
 
+	"github.com/bleenco/go-kit/render"
 	"github.com/go-chi/chi"
+	"github.com/mojcacolnik/go-rest-api-task/cmd/internal/db"
 )
 
 func HandleUpdateUser(w http.ResponseWriter, r *http.Request) {
@@ -18,19 +20,19 @@ func HandleUpdateUser(w http.ResponseWriter, r *http.Request) {
 	var f form
 	defer r.Body.Close()
 
-	user := User{
+	user := db.User{
 		Email:     f.Email,
 		FirstName: f.FirstName,
 		LastName:  f.LastName,
 		IsActive:  f.IsActive,
 	}
 
-	if err := DB.First(&user, params).Error; err != nil {
-		RenderJSON(w, http.StatusInternalServerError, errorResponse{Message: err.Error()})
+	if err := db.DB.First(&user, params).Error; err != nil {
+		render.JSON(w, http.StatusInternalServerError, db.ErrorResponse{Message: err.Error()})
 		return
 	}
-	if err := DB.Save(&user).Error; err != nil {
-		RenderJSON(w, http.StatusInternalServerError, errorResponse{Message: err.Error()})
+	if err := db.DB.Save(&user).Error; err != nil {
+		render.JSON(w, http.StatusInternalServerError, db.ErrorResponse{Message: err.Error()})
 	}
-	RenderJSON(w, http.StatusOK, user)
+	render.JSON(w, http.StatusOK, user)
 }

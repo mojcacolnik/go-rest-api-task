@@ -7,7 +7,7 @@ import (
 	"net/http"
 )
 
-func initializeRouter() {
+func InitializeRouter() {
 	router := chi.NewRouter()
 
 	router.Get("/api/users", user.HandleListUsers)

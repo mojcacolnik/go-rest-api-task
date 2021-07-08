@@ -1,14 +1,19 @@
 package user
 
-import "net/http"
+import (
+	"net/http"
+
+	"github.com/bleenco/go-kit/render"
+	"github.com/mojcacolnik/go-rest-api-task/cmd/internal/db"
+)
 
 func HandleListUsers(w http.ResponseWriter, r *http.Request) {
-	var users []User
+	var users []db.User
 
-	if err := DB.Find(&users).Error; err != nil {
-		RenderJSON(w, http.StatusInternalServerError, errorResponse{Message: err.Error()})
+	if err := db.DB.Find(&users).Error; err != nil {
+		render.JSON(w, http.StatusInternalServerError, db.ErrorResponse{Message: err.Error()})
 		return
 	}
 
-	RenderJSON(w, http.StatusOK, users)
+	render.JSON(w, http.StatusOK, users)
 }
